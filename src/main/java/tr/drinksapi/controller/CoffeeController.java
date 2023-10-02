@@ -7,8 +7,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import tr.drinksapi.model.Coffee;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 @RestController
 public class CoffeeController {
+
+    private final AtomicLong counter = new AtomicLong();
 
     @GetMapping(value = "/coffeelover")
     public String coffeeLover() {
@@ -16,19 +20,7 @@ public class CoffeeController {
     }
 
     @GetMapping(value = "/coffee")
-    public ResponseEntity<Coffee> getCoffee(@RequestParam(required = false) String name) {
-        Long id = 1L;
-        String coffeeName = "latte";
-
-        if(name != null) {
-            coffeeName = name;
-        }
-
-        Coffee coffee = Coffee.builder()
-                .id(id)
-                .name(coffeeName)
-                .build();
-
-        return new ResponseEntity<>(coffee, HttpStatus.OK);
+    public ResponseEntity<Coffee> getCoffee(@RequestParam(value = "name", defaultValue = "latte") String name) {
+        return new ResponseEntity<>(new Coffee(counter.incrementAndGet(), name), HttpStatus.OK);
     }
 }
